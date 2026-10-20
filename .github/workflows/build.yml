@@ -164,14 +164,6 @@ jobs:
           echo "--- device tree present? ---"
           ls device/xiaomi/begonia
 
-      - name: Make libfscrypttwrp available to platform libfs_mgr
-        run: |
-          cd "$SRC_DIR"
-          # TeamWin's vendor/twrp marks libfscrypttwrp recovery-only, but this
-          # product also builds the platform variant of libfs_mgr.
-          sed -i '/recovery_available: true,/d' vendor/twrp/libfscrypt/Android.bp
-          grep -n 'libfscrypttwrp\|recovery_available' vendor/twrp/libfscrypt/Android.bp
-
       - name: Record TWRP source revisions
         run: |
           cd "$SRC_DIR"
