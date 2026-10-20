@@ -14,7 +14,7 @@ working prebuilt kernel, DTB, DTBO, fstab and decryption blobs.
 | TWRP manifest | `minimal-manifest-twrp/platform_manifest_twrp_aosp` @ `twrp-12.1` |
 | TWRP recovery source | `TeamWin/android_bootable_recovery` @ `android-12.1` |
 | TWRP vendor config | `TeamWin/android_vendor_twrp` @ `android-12.1` |
-| Device tree | `methylphetamine/device_xiaomi_begonia-twrp` @ `twrp-12.1` |
+| Device tree | `methylphetamine/device_xiaomi_begonia-twrp` @ `twrp-12.1` or `unified` |
 | Product / lunch | `twrp_begonia` / `twrp_begonia-eng` |
 | Make target | `recoveryimage` |
 | Output | `out/target/product/begonia/recovery.img` |
@@ -29,6 +29,9 @@ the 12.1 recovery source. The 14.x branch would need a device-tree port.
    - `makefile` — default `twrp_begonia-eng`
    - `build_target` — default `recoveryimage`
    - `manifest_branch` — default `twrp-12.1`
+   - `device_branch` — device tree branch, default `twrp-12.1`; set it to
+     `unified` to build the dual-layout tree (dynamic+erofs **and**
+     non-dynamic+ext4/f2fs)
    - `jobs` — default `4` (the runner has 4 vCPUs)
    - `ccache` — default `true`
    - `publish_release` — attach the image to a GitHub release
