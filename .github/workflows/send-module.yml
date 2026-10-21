@@ -2,6 +2,11 @@ name: Send module to Telegram
 
 on:
   workflow_dispatch:
+    inputs:
+      send:
+        description: 'Send the module zip to Telegram'
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -17,6 +22,7 @@ jobs:
           sha256sum module.zip
 
       - name: Send to Telegram
+        if: ${{ inputs.send }}
         env:
           TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
