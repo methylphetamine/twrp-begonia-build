@@ -1,0 +1,46 @@
+name: Send module to Telegram
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download module release
+        run: |
+          curl -fsSL -o module.zip \
+            https://github.com/methylphetamine/devopts-hw-overlays/releases/download/v1.0.0/devopts_hw_overlays-v1.0.0.zip
+          sha256sum module.zip
+
+      - name: Send to Telegram
+        env:
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          SHA=$(sha256sum module.zip | awk '{print $1}')
+          CAPTION=$(printf 'DevOptions + Disable HW Overlays v1.0.0\nSHA256: %s\nGofile: https://gofile.io/d/DRv7hLDC\nRelease: https://github.com/methylphetamine/devopts-hw-overlays/releases/tag/v1.0.0' "$SHA")
+          curl -sS -o /tmp/tg.json \
+            -F "chat_id=${TG_CHAT}" \
+            -F "document=@module.zip" \
+            --form-string "caption=${CAPTION}" \
+            "https://api.telegram.org/bot${TG_TOKEN}/sendDocument"
+          if jq -e '.ok == true' /tmp/tg.json >/dev/null 2>&1; then
+            echo "Telegram: module sent"
+          else
+            echo "::error::Telegram send failed"
+            exit 1
+          fi
+
+      - name: Copy Telegram secrets to the module repo
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          gh secret set TELEGRAM_BOT_TOKEN -R methylphetamine/devopts-hw-overlays --body "$TG_TOKEN"
+          gh secret set TELEGRAM_CHAT_ID -R methylphetamine/devopts-hw-overlays --body "$TG_CHAT"
+          gh secret list -R methylphetamine/devopts-hw-overlays
